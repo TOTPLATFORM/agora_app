@@ -80,6 +80,8 @@ class _VideoCallPageState extends State<VideoCallPage> {
     for (var uid in _remoteUids) {
       _remoteViews.add(
         Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
           padding: EdgeInsets.all(8),
           child: AgoraVideoView(
             controller: VideoViewController.remote(
