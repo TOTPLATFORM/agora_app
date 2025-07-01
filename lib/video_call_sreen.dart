@@ -21,6 +21,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
   bool _isMicOn = true;
   bool _isCameraOn = true;
   bool _isSpeakerOn = true;
+  bool _isFrontCamera = true; // Add this line to track camera direction
   late RtcEngine _engine;
 
   @override
@@ -132,6 +133,14 @@ class _VideoCallPageState extends State<VideoCallPage> {
     }
   }
 
+  //! toggle camera direction (front/back)
+  Future<void> toggleCameraDirection() async {
+    setState(() {
+      _isFrontCamera = !_isFrontCamera;
+    });
+    await _engine.switchCamera();
+  }
+
   //! toggle speaker
   Future<void> toggleSpeaker() async {
     setState(() {
@@ -197,7 +206,6 @@ class _VideoCallPageState extends State<VideoCallPage> {
             left: 0,
             right: 0,
             child: Column(
-              spacing: 16,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -224,6 +232,15 @@ class _VideoCallPageState extends State<VideoCallPage> {
                     ),
                     CircleAvatar(
                       radius: 25,
+                      backgroundColor: Colors.green,
+                      child: IconButton(
+                        icon: Icon(Icons.cameraswitch),
+                        color: Colors.white,
+                        onPressed: toggleCameraDirection,
+                      ),
+                    ),
+                    CircleAvatar(
+                      radius: 25,
                       backgroundColor: _isSpeakerOn ? Colors.blue : Colors.grey,
                       child: IconButton(
                         icon: const Icon(Icons.volume_up),
@@ -233,6 +250,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
                 CircleAvatar(
                   radius: 25,
                   backgroundColor: Colors.red,
