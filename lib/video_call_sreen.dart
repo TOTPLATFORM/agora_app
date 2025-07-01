@@ -13,7 +13,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
   final String appId = "6fc544c0c3384328895b4b95c2e48e74";
   final String channelName = "vedio_call";
   final String token =
-      "007eJxTYKjbr8761E001/XR2yyVi0ppbx0uyE9vk5sncuBTWZn4wVcKDGZpyaYmJskGycbGFibGRhYWlqZJJkmWpslGqSYWqeYmt0OTMhoCGRnk8vezMjJAIIjPxVCWmpKZH5+cmJPDwAAA3cohDQ==";
+      "007eJxTYDDZ993v7su/dfxXi7fLarnGvV8rfCKKt7Lt2dllQRcPikxQYDBLSzY1MUk2SDY2tjAxNrKwsDRNMkmyNE02SjWxSDU3OX8uOaMhkJFB/3c4CyMDBIL4XAxlqSmZ+fHJiTk5DAwAn6YjYw==";
 
   final List<int> _remoteUids = [];
   final List<Widget> _remoteViews = [];
@@ -29,6 +29,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     initAgora();
   }
 
+  //! init Agora
   Future<void> initAgora() async {
     await [Permission.microphone, Permission.camera].request();
 
@@ -75,6 +76,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     await _engine.startPreview();
   }
 
+  //! update remote views
   void _updateRemoteViews() {
     _remoteViews.clear();
     for (var uid in _remoteUids) {
@@ -96,6 +98,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     setState(() {});
   }
 
+  //! join channel
   Future<void> joinChannel() async {
     await _engine.joinChannel(
       token: token,
@@ -110,6 +113,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     );
   }
 
+  //! toggle mic
   Future<void> toggleMic() async {
     setState(() {
       _isMicOn = !_isMicOn;
@@ -117,6 +121,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     await _engine.muteLocalAudioStream(!_isMicOn);
   }
 
+  //! toggle camera
   Future<void> toggleCamera() async {
     setState(() {
       _isCameraOn = !_isCameraOn;
@@ -127,6 +132,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     }
   }
 
+  //! toggle speaker
   Future<void> toggleSpeaker() async {
     setState(() {
       _isSpeakerOn = !_isSpeakerOn;
@@ -134,6 +140,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     await _engine.setEnableSpeakerphone(_isSpeakerOn);
   }
 
+  //! leave channel
   void leaveChannel() async {
     await _engine.leaveChannel();
     setState(() {
