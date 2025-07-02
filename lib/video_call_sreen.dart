@@ -21,7 +21,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
   bool _isMicOn = true;
   bool _isCameraOn = true;
   bool _isSpeakerOn = true;
-  bool _isFrontCamera = true; // Add this line to track camera direction
+  bool _isFrontCamera = true;
   late RtcEngine _engine;
 
   @override
