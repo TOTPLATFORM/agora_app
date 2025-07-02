@@ -71,8 +71,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder:
                         (context) =>
-                            // RtmApiDemo(),
-                            const VideoCallPage(),
+                        // RtmApiDemo(),
+                        const VideoCallPage(isHost: true),
+                  ),
+                );
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Video Call For Users '),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                        // RtmApiDemo(),
+                        const VideoCallPage(isHost: false),
                   ),
                 );
               },

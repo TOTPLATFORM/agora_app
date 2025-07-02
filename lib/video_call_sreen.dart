@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VideoCallPage extends StatefulWidget {
-  const VideoCallPage({super.key});
+  final bool isHost;
+  const VideoCallPage({super.key, this.isHost = false});
 
   @override
   _VideoCallPageState createState() => _VideoCallPageState();
@@ -11,26 +14,28 @@ class VideoCallPage extends StatefulWidget {
 
 class _VideoCallPageState extends State<VideoCallPage> {
   final String appId = "6fc544c0c3384328895b4b95c2e48e74";
-  final String channelName = "vedio_call";
+  final String channelName = "video_call";
   final String token =
-      "007eJxTYDDZ993v7su/dfxXi7fLarnGvV8rfCKKt7Lt2dllQRcPikxQYDBLSzY1MUk2SDY2tjAxNrKwsDRNMkmyNE02SjWxSDU3OX8uOaMhkJFB/3c4CyMDBIL4XAxlqSmZ+fHJiTk5DAwAn6YjYw==";
+      "007eJxTYMjbkcozIzs/c+ue9td33PkOJ71VyN6tckzSMCPsbVaG0yUFBrO0ZFMTk2SDZGNjCxNjIwsLS9MkkyRL02SjVBOLVHOTL4ypGQ2BjAwvNONZGBkgEMTnYijLTEnNj09OzMlhYAAA+Z4hIQ==";
 
   final List<int> _remoteUids = [];
+  final List<int> _pendingUsers = [];
   final List<Widget> _remoteViews = [];
   bool _isJoined = false;
   bool _isMicOn = true;
   bool _isCameraOn = true;
   bool _isSpeakerOn = true;
   bool _isFrontCamera = true;
+  late bool _isHost;
   late RtcEngine _engine;
 
   @override
   void initState() {
+    _isHost = widget.isHost;
     super.initState();
     initAgora();
   }
 
-  //! init Agora
   Future<void> initAgora() async {
     await [Permission.microphone, Permission.camera].request();
 
@@ -40,17 +45,25 @@ class _VideoCallPageState extends State<VideoCallPage> {
     _engine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          setState(() {
-            _isJoined = true;
-          });
+          log("Joined channel. Host status: $_isHost");
+          setState(() => _isJoined = true);
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          setState(() {
-            if (!_remoteUids.contains(remoteUid)) {
+          log("User $remoteUid joined. I am host: $_isHost");
+
+          if (_isHost) {
+            log("Host: Showing approval dialog for $remoteUid");
+            setState(() => _pendingUsers.add(remoteUid));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _showUserApprovalDialog(remoteUid);
+            });
+          } else {
+            log("Participant: Automatically showing $remoteUid");
+            setState(() {
               _remoteUids.add(remoteUid);
               _updateRemoteViews();
-            }
-          });
+            });
+          }
         },
         onUserOffline: (
           RtcConnection connection,
@@ -59,6 +72,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
         ) {
           setState(() {
             _remoteUids.remove(remoteUid);
+            _pendingUsers.remove(remoteUid);
             _updateRemoteViews();
           });
         },
@@ -66,7 +80,6 @@ class _VideoCallPageState extends State<VideoCallPage> {
     );
 
     await _engine.enableVideo();
-
     await _engine.setVideoEncoderConfiguration(
       const VideoEncoderConfiguration(
         dimensions: VideoDimensions(width: 640, height: 480),
@@ -77,15 +90,60 @@ class _VideoCallPageState extends State<VideoCallPage> {
     await _engine.startPreview();
   }
 
-  //! update remote views
+  void _showUserApprovalDialog(int remoteUid) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("New Participant Request"),
+            content: Text("User $remoteUid wants to join the call"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  _rejectUser(remoteUid);
+                  Navigator.pop(context);
+                },
+                child: const Text("Reject"),
+              ),
+              TextButton(
+                onPressed: () {
+                  _approveUser(remoteUid);
+                  Navigator.pop(context);
+                },
+                child: const Text("Approve"),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _approveUser(int remoteUid) {
+    log("Approving user $remoteUid");
+    setState(() {
+      _pendingUsers.remove(remoteUid);
+      if (!_remoteUids.contains(remoteUid)) {
+        _remoteUids.add(remoteUid);
+      }
+      _updateRemoteViews();
+    });
+  }
+
+  void _rejectUser(int remoteUid) {
+    log("Rejecting user $remoteUid");
+    setState(() {
+      _pendingUsers.remove(remoteUid);
+    });
+  }
+
   void _updateRemoteViews() {
+    log("Updating views for UIDs: $_remoteUids");
     _remoteViews.clear();
     for (var uid in _remoteUids) {
       _remoteViews.add(
         Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: AgoraVideoView(
             controller: VideoViewController.remote(
               rtcEngine: _engine,
@@ -99,7 +157,6 @@ class _VideoCallPageState extends State<VideoCallPage> {
     setState(() {});
   }
 
-  //! join channel
   Future<void> joinChannel() async {
     await _engine.joinChannel(
       token: token,
@@ -150,7 +207,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
   }
 
   //! leave channel
-  void leaveChannel() async {
+  Future<void> leaveChannel() async {
     await _engine.leaveChannel();
     setState(() {
       _isJoined = false;
@@ -161,23 +218,20 @@ class _VideoCallPageState extends State<VideoCallPage> {
   }
 
   @override
-  void dispose() {
-    _engine.leaveChannel();
-    _engine.release();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Agora Video Chat')),
+      appBar: AppBar(
+        title: Text(_isHost ? 'Hosting Video Call' : 'Video Call'),
+      ),
       body: Stack(
         children: [
           _remoteUids.isEmpty
               ? Center(
                 child: Text(
                   _isJoined
-                      ? 'Waiting for participants...'
+                      ? _isHost
+                          ? 'You are the host. Waiting for participants...'
+                          : 'Connected to call'
                       : 'Press call button to start',
                 ),
               )
@@ -185,6 +239,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
                 crossAxisCount: _calculateGridCount(),
                 children: _remoteViews,
               ),
+
           if (_isCameraOn && _isJoined)
             Positioned(
               top: 20,
@@ -201,6 +256,23 @@ class _VideoCallPageState extends State<VideoCallPage> {
               ),
             ),
 
+          if (_isHost && _pendingUsers.isNotEmpty)
+            Positioned(
+              top: 50,
+              left: 20,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Pending: ${_pendingUsers.length}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+
           Positioned(
             bottom: 30,
             left: 0,
@@ -210,35 +282,38 @@ class _VideoCallPageState extends State<VideoCallPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: _isMicOn ? Colors.blue : Colors.red,
-                      child: IconButton(
-                        icon: Icon(_isMicOn ? Icons.mic : Icons.mic_off),
-                        color: Colors.white,
-                        onPressed: toggleMic,
-                      ),
-                    ),
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: _isCameraOn ? Colors.blue : Colors.red,
-                      child: IconButton(
-                        icon: Icon(
-                          _isCameraOn ? Icons.videocam : Icons.videocam_off,
+                    if (_isJoined)
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundColor: _isMicOn ? Colors.blue : Colors.red,
+                        child: IconButton(
+                          icon: Icon(_isMicOn ? Icons.mic : Icons.mic_off),
+                          color: Colors.white,
+                          onPressed: toggleMic,
                         ),
-                        color: Colors.white,
-                        onPressed: toggleCamera,
                       ),
-                    ),
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.green,
-                      child: IconButton(
-                        icon: Icon(Icons.cameraswitch),
-                        color: Colors.white,
-                        onPressed: toggleCameraDirection,
+                    if (_isJoined)
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundColor: _isCameraOn ? Colors.blue : Colors.red,
+                        child: IconButton(
+                          icon: Icon(
+                            _isCameraOn ? Icons.videocam : Icons.videocam_off,
+                          ),
+                          color: Colors.white,
+                          onPressed: toggleCamera,
+                        ),
                       ),
-                    ),
+                    if (_isJoined)
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.green,
+                        child: IconButton(
+                          icon: const Icon(Icons.cameraswitch),
+                          color: Colors.white,
+                          onPressed: toggleCameraDirection,
+                        ),
+                      ),
                     CircleAvatar(
                       radius: 25,
                       backgroundColor: _isSpeakerOn ? Colors.blue : Colors.grey,
@@ -280,5 +355,12 @@ class _VideoCallPageState extends State<VideoCallPage> {
     if (_remoteUids.length == 1) return 1;
     if (_remoteUids.length <= 4) return 2;
     return 3;
+  }
+
+  @override
+  void dispose() {
+    _engine.leaveChannel();
+    _engine.release();
+    super.dispose();
   }
 }
