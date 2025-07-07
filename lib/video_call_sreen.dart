@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_test_app/constant.dart';
+import 'package:agora_test_app/vido_call_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -151,20 +152,6 @@ class _VideoCallPageState extends State<VideoCallPage> {
       );
     }
     setState(() {});
-  }
-
-  Future<void> joinChannel() async {
-    await _engine.joinChannel(
-      token: AppConstant.token,
-      channelId: AppConstant.channelName,
-      uid: 0,
-      options: const ChannelMediaOptions(
-        channelProfile: ChannelProfileType.channelProfileCommunication,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        publishMicrophoneTrack: true,
-        publishCameraTrack: true,
-      ),
-    );
   }
 
   //! toggle mic
@@ -339,7 +326,9 @@ class _VideoCallPageState extends State<VideoCallPage> {
       floatingActionButton:
           !_isJoined
               ? FloatingActionButton(
-                onPressed: joinChannel,
+                onPressed: () {
+                  VidoCallHandler(_engine).joinChannel();
+                },
                 child: const Icon(Icons.call),
               )
               : null,
