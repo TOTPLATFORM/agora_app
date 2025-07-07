@@ -7,6 +7,7 @@ class VidoCallHandler {
 
   VidoCallHandler(this._engine);
 
+  //! Join channel
   Future<void> joinChannel() async {
     await _engine.joinChannel(
       token: AppConstant.token,
@@ -19,5 +20,13 @@ class VidoCallHandler {
         publishCameraTrack: true,
       ),
     );
+  }
+
+  //! Calculate grid count
+  int calculateGridCount(final List<int> remoteUids) {
+    if (remoteUids.isEmpty) return 1;
+    if (remoteUids.length == 1) return 1;
+    if (remoteUids.length <= 4) return 2;
+    return 3;
   }
 }

@@ -219,7 +219,9 @@ class _VideoCallPageState extends State<VideoCallPage> {
                 ),
               )
               : GridView.count(
-                crossAxisCount: _calculateGridCount(),
+                crossAxisCount: VidoCallHandler(
+                  _engine,
+                ).calculateGridCount(_remoteUids),
                 children: _remoteViews,
               ),
 
@@ -333,13 +335,6 @@ class _VideoCallPageState extends State<VideoCallPage> {
               )
               : null,
     );
-  }
-
-  int _calculateGridCount() {
-    if (_remoteUids.isEmpty) return 1;
-    if (_remoteUids.length == 1) return 1;
-    if (_remoteUids.length <= 4) return 2;
-    return 3;
   }
 
   @override
