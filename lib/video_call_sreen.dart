@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_test_app/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -13,11 +14,6 @@ class VideoCallPage extends StatefulWidget {
 }
 
 class _VideoCallPageState extends State<VideoCallPage> {
-  final String appId = "6fc544c0c3384328895b4b95c2e48e74";
-  final String channelName = "video_call";
-  final String token =
-      "007eJxTYMjbkcozIzs/c+ue9td33PkOJ71VyN6tckzSMCPsbVaG0yUFBrO0ZFMTk2SDZGNjCxNjIwsLS9MkkyRL02SjVBOLVHOTL4ypGQ2BjAwvNONZGBkgEMTnYijLTEnNj09OzMlhYAAA+Z4hIQ==";
-
   final List<int> _remoteUids = [];
   final List<int> _pendingUsers = [];
   final List<Widget> _remoteViews = [];
@@ -40,7 +36,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
     await [Permission.microphone, Permission.camera].request();
 
     _engine = createAgoraRtcEngine();
-    await _engine.initialize(RtcEngineContext(appId: appId));
+    await _engine.initialize(RtcEngineContext(appId: AppConstant.appId));
 
     _engine.registerEventHandler(
       RtcEngineEventHandler(
@@ -148,7 +144,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
             controller: VideoViewController.remote(
               rtcEngine: _engine,
               canvas: VideoCanvas(uid: uid),
-              connection: RtcConnection(channelId: channelName),
+              connection: RtcConnection(channelId: AppConstant.channelName),
             ),
           ),
         ),
@@ -159,8 +155,8 @@ class _VideoCallPageState extends State<VideoCallPage> {
 
   Future<void> joinChannel() async {
     await _engine.joinChannel(
-      token: token,
-      channelId: channelName,
+      token: AppConstant.token,
+      channelId: AppConstant.channelName,
       uid: 0,
       options: const ChannelMediaOptions(
         channelProfile: ChannelProfileType.channelProfileCommunication,
