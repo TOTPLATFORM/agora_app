@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'widget/custom_update_remote_view.dart';
 import 'widget/show_accept_or_reject_dialog.dart';
 
 class VideoCallPage extends StatefulWidget {
@@ -76,7 +77,11 @@ class _VideoCallPageState extends State<VideoCallPage> {
             log("Participant: Automatically showing $remoteUid");
             setState(() {
               _remoteUids.add(remoteUid);
-              _updateRemoteViews();
+              updateRemoteViews(
+                engine: _engine,
+                remoteUids: _remoteUids,
+                remoteViews: _remoteViews,
+              );
             });
           }
         },
@@ -88,7 +93,11 @@ class _VideoCallPageState extends State<VideoCallPage> {
           setState(() {
             _remoteUids.remove(remoteUid);
             _pendingUsers.remove(remoteUid);
-            _updateRemoteViews();
+            updateRemoteViews(
+              engine: _engine,
+              remoteUids: _remoteUids,
+              remoteViews: _remoteViews,
+            );
           });
         },
       ),
@@ -112,7 +121,11 @@ class _VideoCallPageState extends State<VideoCallPage> {
       if (!_remoteUids.contains(remoteUid)) {
         _remoteUids.add(remoteUid);
       }
-      _updateRemoteViews();
+      updateRemoteViews(
+        engine: _engine,
+        remoteUids: _remoteUids,
+        remoteViews: _remoteViews,
+      );
     });
   }
 
@@ -121,28 +134,6 @@ class _VideoCallPageState extends State<VideoCallPage> {
     setState(() {
       _pendingUsers.remove(remoteUid);
     });
-  }
-
-  void _updateRemoteViews() {
-    log("Updating views for UIDs: $_remoteUids");
-    _remoteViews.clear();
-    for (var uid in _remoteUids) {
-      _remoteViews.add(
-        Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.all(8),
-          child: AgoraVideoView(
-            controller: VideoViewController.remote(
-              rtcEngine: _engine,
-              canvas: VideoCanvas(uid: uid),
-              connection: RtcConnection(channelId: AppConstant.channelName),
-            ),
-          ),
-        ),
-      );
-    }
-    setState(() {});
   }
 
   //! toggle mic
