@@ -2,8 +2,7 @@ name: agora_test_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' 
-
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -18,11 +17,11 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   agora_rtc_engine: ^6.5.2
-  # agora_rtm: ^2.2.2
   cupertino_icons: ^1.0.8
+  equatable: ^2.0.7
   flutter:
     sdk: flutter
-  # flutter_local_notifications: ^19.3.0
+  flutter_bloc: ^9.1.1
   permission_handler: ^12.0.0+1
 
 dev_dependencies:
