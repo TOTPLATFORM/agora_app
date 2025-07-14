@@ -29,12 +29,13 @@ class _VideoCallPageState extends State<VideoCallPage> {
   final bool _isCameraOn = true;
   final bool _isSpeakerOn = true;
   final bool _isFrontCamera = true;
-  late bool _isHost;
+  bool _isHost = false;
+  int? _hostUid;
   late RtcEngine _engine;
 
   @override
   void initState() {
-    _isHost = widget.isHost;
+    //_isHost = widget.isHost;
     super.initState();
     initAgora();
   }
@@ -50,6 +51,12 @@ class _VideoCallPageState extends State<VideoCallPage> {
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           log("Joined channel. Host status: $_isHost");
           setState(() => _isJoined = true);
+          if (_remoteUids.isEmpty) {
+            setState(() {
+              _isHost = true;
+              _hostUid = 0;
+            });
+          }
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           log("User $remoteUid joined. I am host: $_isHost");

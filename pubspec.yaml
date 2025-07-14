@@ -17,6 +17,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   agora_rtc_engine: ^6.5.2
+  agora_rtm: ^2.2.2
   cupertino_icons: ^1.0.8
   equatable: ^2.0.7
   flutter:

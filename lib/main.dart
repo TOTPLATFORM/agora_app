@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(const MyApp());
 }
 
@@ -30,69 +29,64 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // void handleIncomingCall() {
-  //   CallManager.showIncomingCall(
-  //     context: context,
-  //     callerId: 'caller_id',
-  //     currentUserId: 'current_user_id',
-  //     appId: 'your_app_id',
-  //     token: 'your_token',
-  //     channelName: 'channel_name_from_caller',
-  //   );
-  // }
+  final bool _isHost = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Video Call App')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-
-          spacing: 16,
           children: [
-            // To make a call
-            // ElevatedButton(
-            //   onPressed:
-            //       () => CallManager.makeCall(
-            //         context: context,
-            //         targetUserId: 'target_user_id',
-            //         currentUserId: 'current_user_id',
-            //         appId: '6fc544c0c3384328895b4b95c2e48e74',
-            //         token:
-            //             '007eJxTYDDuO5yy/Xm9TfQGVqfl6t/L1rPMVv0bMqfyoQKvbt6nM3kKDGZpyaYmJskGycbGFibGRhYWlqZJJkmWpslGqSYWqeYmSxwTMxoCGRlcJqgxMjJAIIjPwlCSWlzCwAAAFj0eFQ==',
-            //       ),
-            //   child: const Text('Start Call'),
-            // ),
             ElevatedButton(
-              child: const Text('Video Call'),
+              child: const Text('Start Video Call'),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                        // RtmApiDemo(),
-                        const VideoCallPage(isHost: true),
-                  ),
-                );
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Video Call For Users '),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                        // RtmApiDemo(),
-                        const VideoCallPage(isHost: false),
-                  ),
-                );
+                // showDialog(
+                //   context: context,
+                //   builder:
+                //       (context) => AlertDialog(
+                //         title: const Text('Select Role'),
+                //         content: const Text(
+                //           'Do you want to join as host or participant?',
+                //         ),
+                //         actions: [
+                //           TextButton(
+                //             onPressed: () {
+                //               Navigator.pop(context);
+                //               setState(() => _isHost = true);
+                //               _navigateToCallScreen();
+                //             },
+                //             child: const Text('Host'),
+                //           ),
+                //           TextButton(
+                //             onPressed: () {
+                //               Navigator.pop(context);
+                //               setState(() => _isHost = false);
+                //               _navigateToCallScreen();
+                //             },
+                //             child: const Text('Participant'),
+                //           ),
+                //         ],
+                //       ),
+                // );
+                _navigateToCallScreen();
               },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _navigateToCallScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => VideoCallPage(
+              //isHost: _isHost
+            ),
       ),
     );
   }
