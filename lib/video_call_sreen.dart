@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtm/agora_rtm.dart';
 import 'package:agora_test_app/constant.dart';
 import 'package:agora_test_app/cubit/video_cubit.dart';
 import 'package:agora_test_app/cubit/video_state.dart';
@@ -14,7 +16,8 @@ import 'widget/show_accept_or_reject_dialog.dart';
 
 class VideoCallPage extends StatefulWidget {
   final bool isHost;
-  const VideoCallPage({super.key, this.isHost = false});
+  final String userId;
+  const VideoCallPage({super.key, this.isHost = false, required this.userId});
 
   @override
   _VideoCallPageState createState() => _VideoCallPageState();
@@ -32,6 +35,8 @@ class _VideoCallPageState extends State<VideoCallPage> {
   bool _isHost = false;
   int? _hostUid;
   late RtcEngine _engine;
+  late RtmClient _rtmClient;
+  final bool _isRtmConnected = false;
 
   @override
   void initState() {
@@ -46,6 +51,52 @@ class _VideoCallPageState extends State<VideoCallPage> {
     _engine = createAgoraRtcEngine();
     await _engine.initialize(RtcEngineContext(appId: AppConstant.appId));
 
+    try {
+      final (status, client) = await RTM(AppConstant.appId, widget.userId);
+      if (status.error == true) {
+        log(
+          '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}',
+        );
+      } else {
+        _rtmClient = client;
+        log('Initialize success!');
+      }
+    } catch (e) {
+      log('Initialize failed!:$e');
+    }
+
+    _rtmClient.addListener(
+      message: (event) {
+        log(
+          'received a message from channel: ${event.channelName}, channel type : ${event.channelType}',
+        );
+        log(
+          'message content: ${utf8.decode(event.message!)}, custome type: ${event.customType}',
+        );
+      },
+
+      linkState: (event) {
+        log(
+          'link state changed from ${event.previousState} to ${event.currentState}',
+        );
+        log('reason: ${event.reason}, due to operation ${event.operation}');
+      },
+    );
+
+    try {
+      // Login to Signaling
+      var (status, response) = await _rtmClient.login(AppConstant.token);
+      if (status.error == true) {
+        log(
+          '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}',
+        );
+      } else {
+        log('login RTM success!');
+      }
+    } catch (e) {
+      log('Failed to login: $e');
+    }
+
     _engine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
@@ -57,6 +108,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
               _hostUid = 0;
             });
           }
+          _joinRtmChannel();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           log("User $remoteUid joined. I am host: $_isHost");
@@ -119,6 +171,44 @@ class _VideoCallPageState extends State<VideoCallPage> {
       ),
     );
     await _engine.startPreview();
+  }
+
+  void _joinRtmChannel() async {
+    for (var i = 0; i < 100; i++) {
+      try {
+        var (status, response) = await _rtmClient.publish(
+          AppConstant.channelName,
+          'message number : $i',
+          channelType: RtmChannelType.message,
+          customType: 'PlainText',
+        );
+        if (status.error == true) {
+          log(
+            '${status.operation} failed, errorCode: ${status.errorCode}, due to ${status.reason}',
+          );
+        } else {
+          log('${status.operation} success! message number:$i');
+        }
+      } catch (e) {
+        log('Failed to publish message: $e');
+      }
+      await Future.delayed(Duration(seconds: 1));
+    }
+
+    try {
+      var (status, response) = await _rtmClient.subscribe(
+        AppConstant.channelName,
+      );
+      if (status.error == true) {
+        log(
+          '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}',
+        );
+      } else {
+        log('subscribe channel: ${AppConstant.channelName} success!');
+      }
+    } catch (e) {
+      log('Failed to subscribe channel: $e');
+    }
   }
 
   void _approveUser(int remoteUid) {
@@ -320,9 +410,36 @@ class _VideoCallPageState extends State<VideoCallPage> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     _engine.leaveChannel();
     _engine.release();
+    try {
+      var (status, response) = await _rtmClient.unsubscribe(
+        AppConstant.channelName,
+      );
+      if (status.error == true) {
+        log(
+          '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}',
+        );
+      } else {
+        log('unsubscribe success!');
+      }
+    } catch (e) {
+      log('something went wrong with logout: $e');
+    }
+
+    try {
+      var (status, response) = await _rtmClient.logout();
+      if (status.error == true) {
+        log(
+          '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}',
+        );
+      } else {
+        log('logout RTM success!');
+      }
+    } catch (e) {
+      log('something went wrong with logout: $e');
+    }
     super.dispose();
   }
 }

@@ -86,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder:
             (context) => VideoCallPage(
               //isHost: _isHost
+              userId: 'user_${DateTime.now().millisecondsSinceEpoch}',
             ),
       ),
     );

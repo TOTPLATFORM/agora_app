@@ -4,7 +4,6 @@ plugins {
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
-
 android {
     namespace = "com.example.agora_test_app"
     compileSdk = flutter.compileSdkVersion
@@ -18,6 +17,13 @@ android {
                 "lib/x86_64/libaosl.so"
             )
         }
+    }
+
+      packagingOptions {
+        pickFirst("lib/arm64-v8a/libaosl.so")
+        pickFirst("lib/armeabi-v7a/libaosl.so")
+        pickFirst("lib/x86/libaosl.so")
+        pickFirst("lib/x86_64/libaosl.so")
     }
 
 
