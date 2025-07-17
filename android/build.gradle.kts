@@ -3,7 +3,7 @@ allprojects {
         google()
         mavenCentral()
         maven {
-            url = uri("https://repo.agora.io/nexus/content/repositories/releases/")
+            url = uri("https://repo.agora.io/nexus/content/repositories/public/")
         }
     }
 }
@@ -16,7 +16,7 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
-    project.evaluationDependsOn(":app")
+     project.evaluationDependsOn(":app")
 }
 
 tasks.register<Delete>("clean") {

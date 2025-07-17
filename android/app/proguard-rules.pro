@@ -1,0 +1,4 @@
+-keep class io.agora.** { *; }
+-keep class com.agora.** { *; }
+-dontwarn io.agora.**
+-dontwarn com.agora.**

@@ -29,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final bool _isHost = false;
+  //  final bool _isHost = false;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder:
             (context) => VideoCallPage(
               //isHost: _isHost
-              userId: 'user_${DateTime.now().millisecondsSinceEpoch}',
+              userId: "2",
             ),
       ),
     );
