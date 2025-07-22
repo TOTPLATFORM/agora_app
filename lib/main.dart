@@ -86,11 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoCallTest(),
-        //  VideoCallPage(
-        //   //isHost: _isHost
-        //   userId: "test_user_123",
-        // ),
+        builder:
+            (context) =>
+            //VideoCallTest(),
+            VideoCallPage(
+              //isHost: _isHost
+              userId: "test_user_123",
+            ),
       ),
     );
   }
