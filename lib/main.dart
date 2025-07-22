@@ -1,5 +1,6 @@
 import 'package:agora_test_app/rtm_api_demo.dart';
 import 'package:agora_test_app/video_call_sreen.dart';
+import 'package:agora_test_app/video_call_test.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: RtmApiDemo(),
+      home: HomeScreen(),
+      // RtmApiDemo(),
     );
   }
 }
@@ -84,11 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => VideoCallPage(
-              //isHost: _isHost
-              userId: "test_user_123",
-            ),
+        builder: (context) => VideoCallTest(),
+        //  VideoCallPage(
+        //   //isHost: _isHost
+        //   userId: "test_user_123",
+        // ),
       ),
     );
   }
