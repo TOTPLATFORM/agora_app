@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
+    <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode
+    setting is off -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- Show a splash screen on the activity. Automatically removed when
              the Flutter engine draws its first frame -->
@@ -15,4 +16,16 @@
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+    <string name="app_name">Signaling Quickstart</string>
+    <string name="login_button">Login</string>
+    <string name="logout_button">Logout</string>
+    <string name="subscribe_button">Subscribe</string>
+    <string name="unsubscribe_button">Unsubscribe</string>
+    <string name="send_channel_msg_button">Publish message</string>
+    <string name="uid">User ID</string>
+    <string name="msg">Message content</string>
+    <string name="channel_name">video_call</string>
+    <string name="app_id">6fc544c0c3384328895b4b95c2e48e74</string>
+    <string name="token">
+        007eJxTYDhY/ebp8mCZjs6s8EidWftexPltTj83vfHNQaOMpctn+FxTYDBLSzY1MUk2SDY2tjAxNrKwsDRNMkmyNE02SjWxSDU3WcpfmdEQyMgQs2YRKyMDBIL4XAxlmSmp+fHJiTk5DAwAql8jPw==</string>
 </resources>

@@ -10,11 +10,10 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
-
-    <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices. -->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!-- For Android 12 and above devices, the following permission is also required. -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <application
         android:label="agora_test_app"
         android:name="${applicationName}"
