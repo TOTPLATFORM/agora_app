@@ -1,6 +1,4 @@
-import 'package:agora_test_app/rtm_api_demo.dart';
 import 'package:agora_test_app/video_call_sreen.dart';
-import 'package:agora_test_app/video_call_test.dart';
 import 'package:flutter/material.dart';
 
 void main() async {

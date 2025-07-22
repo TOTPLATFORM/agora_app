@@ -1,8 +1,5 @@
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:agora_test_app/constant.dart';
 import 'package:flutter/material.dart';
@@ -18,20 +15,20 @@ class _RtmApiDemoState extends State<RtmApiDemo> {
   late TextEditingController _userIdController;
   late TextEditingController _channelNameController;
 
-  final bool _isSubscribeWithMessage = true;
-  final bool _isSubscribeWithMetadata = false;
-  final bool _isSubscribeWithPresence = true;
-  final bool _isSubscribeWithLock = false;
-  final bool _isSubscribeBeQuiet = false;
+  // final bool _isSubscribeWithMessage = true;
+  // final bool _isSubscribeWithMetadata = false;
+  // final bool _isSubscribeWithPresence = true;
+  // final bool _isSubscribeWithLock = false;
+  // final bool _isSubscribeBeQuiet = false;
 
-  final bool _isSetChannelMetadataRecordTs = false;
-  final bool _isSetChannelMetadataRecordUserId = false;
+  // final bool _isSetChannelMetadataRecordTs = false;
+  // final bool _isSetChannelMetadataRecordUserId = false;
   late TextEditingController _setChannelMetadataLockNameController;
   late TextEditingController _setChannelMetadataRevisionController;
   late TextEditingController _setChannelMetadataMajorRevisionController;
 
-  final bool _isWhoNowIncludeUserId = true;
-  final bool _isWhoNowIncludeState = false;
+  // final bool _isWhoNowIncludeUserId = true;
+  // final bool _isWhoNowIncludeState = false;
   late TextEditingController _isWhoNowPageController;
 
   late TextEditingController _rtmClientMessageController;
@@ -39,10 +36,10 @@ class _RtmApiDemoState extends State<RtmApiDemo> {
 
   late KeyValueInputGroupWidgetController _keyValueInputGroupWidgetController;
 
-  final RtmChannelType _rtmChannelType = RtmChannelType.message;
+  // final RtmChannelType _rtmChannelType = RtmChannelType.message;
 
   late RtmClient _rtmClient;
-  late RtcEngine _rtcEngine;
+  // late RtcEngine _rtcEngine;
 
   @override
   void initState() {
@@ -109,28 +106,28 @@ class _RtmApiDemoState extends State<RtmApiDemo> {
     );
   }
 
-  Widget _switch(String title, bool value, ValueChanged<bool> callback) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [Text('$title: '), Switch(value: value, onChanged: callback)],
-    );
-  }
+  // Widget _switch(String title, bool value, ValueChanged<bool> callback) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.start,
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [Text('$title: '), Switch(value: value, onChanged: callback)],
+  //   );
+  // }
 
-  Widget _card(List<Widget> children) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: children,
-        ),
-      ),
-    );
-  }
+  // Widget _card(List<Widget> children) {
+  //   return Card(
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(8.0),
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         mainAxisSize: MainAxisSize.max,
+  //         children: children,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
