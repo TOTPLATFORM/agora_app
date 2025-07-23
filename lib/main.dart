@@ -87,10 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder:
             (context) =>
             //VideoCallTest(),
-            VideoCallPage(
-              //isHost: _isHost
-              userId: "test_user_123",
-            ),
+            VideoCallPage(isHost: false, userId: "test_user_123"),
       ),
     );
   }
